@@ -52,12 +52,7 @@ export default class Tooltip {
             ...Tooltip.filterOptions(options)
         };
 
-        const $tpl = this._createTooltipElement(this.options);
-        document.querySelector('body').appendChild($tpl);
-
         this._$el = el;
-        this._$tt = new Popper(el, $tpl, this._options);
-        this._$tpl = $tpl;
         this._disabled = false;
         this._visible = false;
         this._clearDelay = null;
@@ -134,10 +129,10 @@ export default class Tooltip {
                 }
             });
 
-            if (includes(this.options.triggers, 'hover') || includes(this.options.triggers, 'focus')) {
-                this._$tpl[evtType]('mouseenter', this._onMouseOverTooltip.bind(this), false);
-                this._$tpl[evtType]('mouseleave', this._onMouseOutTooltip.bind(this), false);
-            }
+            // if (includes(this.options.triggers, 'hover') || includes(this.options.triggers, 'focus')) {
+            //     this._$tpl[evtType]('mouseenter', this._onMouseOverTooltip.bind(this), false);
+            //     this._$tpl[evtType]('mouseleave', this._onMouseOutTooltip.bind(this), false);
+            // }
         }
     }
 
@@ -172,22 +167,24 @@ export default class Tooltip {
     }
 
     content (content) {
-        const wrapper = this.tooltip.popper.querySelector('.tooltip-content');
-        if (typeof content === 'string') {
-            this.tooltip.options.title = content;
-            wrapper.textContent = content;
-        } else if (isElement(content)) {
-            if (content !== wrapper.children[0]) {
-                wrapper.innerHTML = '';
-                wrapper.appendChild(content);
+        if (this.tooltip && this.tooltip.popper) {
+            const wrapper = this.tooltip.popper.querySelector('.tooltip-content');
+            if (typeof content === 'string') {
+                this.tooltip.options.title = content;
+                wrapper.textContent = content;
+            } else if (isElement(content)) {
+                if (content !== wrapper.children[0]) {
+                    wrapper.innerHTML = '';
+                    wrapper.appendChild(content);
+                }
+                // var clonedNode = content.cloneNode(true);
+                // this.tooltip.options.title = clonedNode;
+                // if (isElement(content.parentNode)) {
+                //     content.parentNode.removeChild(content);
+                // }
+            } else {
+                console.error('unsupported content type', content);
             }
-            // var clonedNode = content.cloneNode(true);
-            // this.tooltip.options.title = clonedNode;
-            // if (isElement(content.parentNode)) {
-            //     content.parentNode.removeChild(content);
-            // }
-        } else {
-            console.error('unsupported content type', content);
         }
     }
 
@@ -258,11 +255,17 @@ export default class Tooltip {
     }
 
     show () {
+        const $tpl = this._createTooltipElement(this.options);
+        document.querySelector('body').appendChild($tpl);
+        this._$tt = new Popper(this._$el, $tpl, this._options);
+        this._$tpl = $tpl;
+
         this.toggle(true);
     }
 
     hide () {
         this.toggle(false);
+        document.getElementsByClassName('vue-tooltip').item(0).remove();
     }
 
     toggle (visible, autoHide = true) {
