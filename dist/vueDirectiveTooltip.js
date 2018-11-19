@@ -2510,7 +2510,7 @@ var Tooltip$2 = function () {
 
     Tooltip.prototype.destroy = function destroy() {
         this._cleanEvents();
-        document.querySelector('body').removeChild(this._$tpl);
+        // document.querySelector('body').removeChild(this._$tpl);
     };
 
     Tooltip.prototype._createTooltipElement = function _createTooltipElement(options) {

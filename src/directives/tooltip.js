@@ -62,7 +62,7 @@ export default class Tooltip {
 
     destroy () {
         this._cleanEvents();
-        document.querySelector('body').removeChild(this._$tpl);
+        // document.querySelector('body').removeChild(this._$tpl);
     }
 
     get options () {
